@@ -1,0 +1,8 @@
+.DS_Store
+node_modules
+.env
+dist
+.next
+coverage
+postgres_data
+npm-debug.log

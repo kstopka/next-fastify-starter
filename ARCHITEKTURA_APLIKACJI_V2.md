@@ -1,4 +1,6 @@
-# ARCHITEKTURA APLIKACJI V2
+# ARCHITEKTURA_APLIKACJI_V2
+
+Dokumentacja architektury aplikacji (placeholder). Uzupełnij szczegóły architektury.# ARCHITEKTURA APLIKACJI V2
 
 ## Cel projektu
 
