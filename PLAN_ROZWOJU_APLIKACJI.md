@@ -5,7 +5,8 @@ Plan budowy nowoczesnej aplikacji fullstack zgodnie z dokumentem `ARCHITEKTURA_A
 **Zasada pracy:**
 
 - Każdy krok zaczyna się jako `[ ]`.
-- Po wykonaniu zmień na `[✅]`.
+- Po wykonaniu zmień na `[❓]`.
+- Testy -> sprawdzenie wykonanego kroku, dopiero po pozytywnym wyniku zmień na `[✅]`.
 - **Nie przechodź dalej, jeśli poprzedni krok nie ma `[✅]`.**
 - Po zakończeniu etapu wykonaj commit z sekcji **COMMIT**.
 
@@ -83,7 +84,7 @@ tree -L 1
 
 ---
 
-## [ ] 0.3 Konfiguracja `.gitignore`
+## [✅] 0.3 Konfiguracja `.gitignore`
 
 **Co instalujemy**
 
@@ -123,7 +124,7 @@ chore(repo): initialize repository structure
 
 # ETAP 1 — DOCKER FOUNDATION
 
-## [ ] 1.1 Utworzenie podstawowego `docker-compose.yml`
+## [✅] 1.1 Utworzenie podstawowego `docker-compose.yml`
 
 **Co instalujemy**
 
@@ -163,7 +164,7 @@ docker ps
 
 ---
 
-## [ ] 1.2 Dodanie dedykowanej sieci Docker
+## [✅] 1.2 Dodanie dedykowanej sieci Docker
 
 **Co konfigurujemy**
 
@@ -184,7 +185,7 @@ docker network ls
 
 ---
 
-## [ ] 1.3 Dodanie wolumenu dla PostgreSQL
+## [✅] 1.3 Dodanie wolumenu dla PostgreSQL
 
 **Co konfigurujemy**
 
