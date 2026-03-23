@@ -215,7 +215,7 @@ feat(docker): add base docker compose configuration
 
 # ETAP 2 — BACKEND BOOTSTRAP
 
-## [❓] 2.1 Inicjalizacja projektu backend
+## [✅] 2.1 Inicjalizacja projektu backend
 
 **Co instalujemy**
 
@@ -252,7 +252,7 @@ node -v
 
 ---
 
-## [ ] 2.2 Instalacja Fastify
+## [✅] 2.2 Instalacja Fastify
 
 **Co instalujemy**
 
@@ -275,7 +275,7 @@ utworzenie minimalnego serwera.
 
 ---
 
-## [ ] 2.3 Instalacja TypeScript
+## [✅] 2.3 Instalacja TypeScript
 
 **Co instalujemy**
 
@@ -302,7 +302,7 @@ npx tsc --init
 
 ---
 
-## [ ] 2.4 Utworzenie minimalnego serwera Fastify
+## [✅] 2.4 Utworzenie minimalnego serwera Fastify
 
 **Co tworzymy**
 

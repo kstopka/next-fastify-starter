@@ -1,175 +1,221 @@
-# Repository Instructions for GitHub Copilot
+# 🚨 STRICT DEVELOPMENT MODE (MANDATORY)
 
-## PLAN_ROZWOJU_APLIKACJI.md
+You are working in **STEP-BY-STEP EXECUTION MODE**.
 
-Plan budowy nowoczesnej aplikacji fullstack zgodnie z dokumentem `ARCHITEKTURA_APLIKACJI_V2.md`.
+This is NOT a normal coding session.
 
-**Zasada pracy:**
-
-- Każdy krok zaczyna się jako `[ ]`.
-- Po wykonaniu zmień na `[❓]`.
-- Testy -> sprawdzenie wykonanego kroku, dopiero po pozytywnym wyniku zmień na `[✅]`.
-- **Nie przechodź dalej, jeśli poprzedni krok nie ma `[✅]`.**
-- Po zakończeniu etapu wykonaj commit z sekcji **COMMIT**.
-
-## Project Overview
-
-This repository contains a modern fullstack application built with:
-
-- Backend: Fastify + TypeScript + Prisma + PostgreSQL
-- Frontend: Next.js (App Router) + TypeScript + Tailwind CSS
-- Authentication: JWT (access + refresh) with HttpOnly cookies
-- Containerization: Docker Compose v2
-- Environment: Linux-first (WSL2 compatible, VPS-ready)
-
-This project is designed as a long-term training and template
-foundation. Code quality, clarity, and architecture consistency are
-extremely important.
+You MUST follow these rules strictly.
 
 ---
 
-# General Coding Rules
+# ❗ CORE RULE (MOST IMPORTANT)
 
-- Always use TypeScript (no plain JavaScript).
-- Prefer explicit types over `any`.
-- Use strict typing and avoid unsafe casts.
-- Follow clean architecture principles.
-- Keep files small and responsibility-focused.
-- Do not introduce unnecessary dependencies.
-- Do not generate legacy patterns.
-- Do not use deprecated APIs.
+You are ONLY allowed to work on **ONE STEP at a time**.
 
----
+You MUST NOT:
 
-# Backend Rules (Fastify)
+- jump to next steps
+- suggest future steps
+- implement multiple steps at once
+- assume something is done
 
-## Architecture
-
-- Follow feature-based modular structure:
-
-src/ modules/ auth/ user/ plugins/ middleware/ utils/ app.ts server.ts
-
-- Separate controller, service, and repository logic.
-- Do not mix HTTP logic with business logic.
-- All validation must use Zod.
-- Prisma access must be isolated inside repositories or services.
-
-## Authentication
-
-- Use access token (short-lived).
-- Use refresh token (stored in DB).
-- Store refresh tokens in Session table.
-- Use HttpOnly cookies for tokens.
-- Never expose refresh tokens to frontend JavaScript.
-
-## Security
-
-- Use argon2 for password hashing.
-- Never store plain passwords.
-- Use rate limiting.
-- Use helmet.
-- Validate all input.
-- Return safe error messages.
-
-## Logging
-
-- Use Pino for logging.
-- Avoid console.log in production code.
+If a step is not marked `[✅]`, you MUST STOP.
 
 ---
 
-# Database Rules (Prisma + PostgreSQL)
+# 📄 SOURCE OF TRUTH
 
-- Use UUID as primary keys.
-- Always create migrations using `prisma migrate dev`.
-- Never use `db push` in production context.
-- Keep schema clean and normalized.
-- Use relations explicitly.
-- Always handle cascading deletes intentionally.
+The file:
 
----
+PLAN_ROZWOJU_APLIKACJI.md
 
-# Frontend Rules (Next.js App Router)
+is the ONLY source of truth.
 
-## Architecture
+You MUST:
 
-Use feature-based structure:
-
-src/ app/ features/ auth/ user/ shared/ components/ hooks/ lib/ types/
-
-- Prefer Server Components when possible.
-- Use Client Components only when necessary.
-- Keep business logic outside UI components.
-
-## Styling
-
-- Use Tailwind CSS.
-- Prefer utility-first approach.
-- Avoid inline styles.
-- Keep design consistent and minimal.
-
-## State Management
-
-- Use TanStack Query for server state.
-- Use Zustand only for small global UI state.
-- Use React Hook Form + Zod for forms.
-- Do not use Redux unless explicitly requested.
-- Avoid overusing React Context.
-
-## API Layer
-
-- Use Next.js API Routes as BFF layer when needed.
-- Keep API calls centralized.
-- Handle token refresh logic properly.
-- Never expose sensitive tokens to client-side JS.
+1. Read the file
+2. Find the FIRST step that is NOT `[✅]`
+3. Work ONLY on that step
 
 ---
 
-# Docker Rules
+# 🔁 EXECUTION LOOP (MANDATORY)
 
-- Use multi-stage builds.
-- Keep images small (node:20-alpine).
-- Separate dev and prod profiles.
-- Do not hardcode secrets.
-- Use environment variables.
-- Always include healthcheck endpoint `/health`.
+For EVERY step you MUST follow this exact process:
 
 ---
 
-# Code Quality
+## 1. UNDERSTAND STEP
 
-- Prefer readable code over clever code.
-- Use descriptive variable names.
-- Avoid magic numbers.
-- Extract reusable logic.
-- Follow consistent formatting.
+Explain briefly:
 
----
-
-# Commit Convention
-
-Follow Conventional Commits:
-
-- feat: new feature
-- fix: bug fix
-- refactor: code improvement
-- chore: maintenance
-- docs: documentation
-- test: tests
+- what this step is about
+- what will be done
 
 ---
 
-# What Copilot Should Avoid
+## 2. IMPLEMENTATION
 
-- Generating outdated Express patterns.
-- Using CommonJS syntax (use ESM).
-- Adding unnecessary global state.
-- Suggesting insecure authentication flows.
-- Mixing frontend and backend responsibilities.
+Provide:
+
+- exact commands
+- exact code
+- exact file paths
+
+NO placeholders like:
+
+- "add something"
+- "configure as needed"
+
+Everything must be concrete.
 
 ---
 
-This repository prioritizes: - clarity - modern architecture -
-security - scalability - maintainability
+## 3. TEST / VERIFICATION
 
-When generating code, always align with these principles.
+Provide:
+
+- exact command to verify
+- expected output
+
+---
+
+## 4. RESULT STATUS
+
+After implementation you MUST say:
+
+- If user still needs to run something:
+  → mark as `[❓]`
+
+- If step can be confirmed as done:
+  → mark as `[✅]`
+
+---
+
+## 5. STOP
+
+After finishing step:
+
+You MUST STOP and wait.
+
+You MUST ask:
+
+"Confirm when step is completed or paste result."
+
+DO NOT continue.
+
+---
+
+# 🛑 HARD STOP RULE
+
+You are FORBIDDEN to:
+
+- continue to next step automatically
+- summarize future steps
+- suggest roadmap
+- generate full implementations ahead
+
+---
+
+# 🧠 CONTEXT RULES
+
+Tech stack:
+
+- Backend: Fastify + TypeScript + Prisma
+- Frontend: Next.js (App Router) + Tailwind
+- Auth: JWT + Refresh Tokens + HttpOnly cookies
+- DB: PostgreSQL
+- Infra: Docker Compose v2
+- Environment: Linux-first
+
+---
+
+# 🧱 BACKEND RULES
+
+- Use modular architecture (auth, user)
+- Separate controller / service / repository
+- Use Zod for validation
+- Use argon2 for passwords
+- Use Pino for logging
+
+---
+
+# 🎨 FRONTEND RULES
+
+- Use App Router
+- Prefer Server Components
+- Use Tailwind
+- Use React Query
+- Use Zustand ONLY for small UI state
+
+---
+
+# 🐳 DOCKER RULES
+
+- Use node:20-alpine
+- Use PostgreSQL 16
+- Use healthcheck `/health`
+- Use named volumes
+
+---
+
+# ❌ FORBIDDEN
+
+- Skipping steps
+- Guessing completed steps
+- Using outdated patterns (Express, CommonJS)
+- Using `any`
+- Writing pseudo-code
+
+---
+
+# ✅ RESPONSE FORMAT (MANDATORY)
+
+Every response MUST follow this structure:
+
+---
+
+## STEP: <step name>
+
+### 1. What we do
+
+...
+
+### 2. Implementation
+
+(code + commands)
+
+### 3. Verification
+
+(command + expected result)
+
+### 4. Status
+
+[ ] / [❓] / [✅]
+
+### 5. Next action
+
+(wait for user)
+
+---
+
+# 🎯 GOAL
+
+The goal is NOT speed.
+
+The goal is:
+
+- correctness
+- step-by-step execution
+- zero skipped steps
+- production-quality setup
+
+---
+
+# FINAL RULE
+
+If you are unsure:
+
+DO NOT GUESS.
+
+ASK.
