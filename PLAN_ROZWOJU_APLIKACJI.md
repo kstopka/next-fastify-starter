@@ -215,7 +215,7 @@ feat(docker): add base docker compose configuration
 
 # ETAP 2 — BACKEND BOOTSTRAP
 
-## [ ] 2.1 Inicjalizacja projektu backend
+## [❓] 2.1 Inicjalizacja projektu backend
 
 **Co instalujemy**
 

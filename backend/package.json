@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only --loader ts-node/esm src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc -p .",
+    "test": "vitest",
+    "test:watch": "vitest --watch"
+  },
+  "dependencies": {
+    "fastify": "^4.0.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.0.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^18.0.0",
+    "vitest": "^1.0.0"
+  }
+}
