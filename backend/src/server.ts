@@ -7,8 +7,11 @@ server.get("/health", async () => {
   return { status: "ok" };
 });
 
+import registerAuthRoutes from "./modules/auth/auth.controller";
+
 const start = async () => {
   try {
+    await registerAuthRoutes(server);
     await server.listen({ port: PORT, host: "0.0.0.0" });
     server.log.info(`Server listening on ${PORT}`);
   } catch (err) {
