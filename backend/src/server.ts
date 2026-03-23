@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import registerAuthRoutes from "./modules/auth/auth.controller.js";
 
 const PORT = Number(process.env.PORT ?? 4000);
 const server = Fastify({ logger: true });
@@ -6,8 +7,6 @@ const server = Fastify({ logger: true });
 server.get("/health", async () => {
   return { status: "ok" };
 });
-
-import registerAuthRoutes from "./modules/auth/auth.controller";
 
 const start = async () => {
   try {

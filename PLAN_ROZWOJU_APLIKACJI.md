@@ -423,7 +423,7 @@ feat(database): add prisma schema and migrations
 
 # ETAP 4 — AUTORYZACJA
 
-## [ ] 4.1 Instalacja bibliotek auth
+## [✅] 4.1 Instalacja bibliotek auth
 
 ```
 argon2
@@ -433,7 +433,7 @@ zod
 
 ---
 
-## [ ] 4.2 Implementacja modułu auth
+## [✅] 4.2 Implementacja modułu auth
 
 ```
 src/modules/auth
@@ -449,7 +449,7 @@ auth.repository.ts
 
 ---
 
-## [ ] 4.3 Endpoint login
+## [✅] 4.3 Endpoint login
 
 ```
 POST /login
@@ -463,7 +463,7 @@ Flow:
 
 ---
 
-## [ ] 4.4 Endpoint refresh
+## [✅] 4.4 Endpoint refresh
 
 ```
 POST /refresh
