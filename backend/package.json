@@ -11,7 +11,9 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "fastify": "^4.29.1"
+    "@prisma/client": "^7.5.0",
+    "fastify": "^4.29.1",
+    "prisma": "^7.5.0"
   },
   "devDependencies": {
     "@types/node": "^18.19.130",

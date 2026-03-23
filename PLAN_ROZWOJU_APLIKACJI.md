@@ -337,7 +337,7 @@ feat(backend): bootstrap fastify server
 
 # ETAP 3 — PRISMA I BAZA DANYCH
 
-## [ ] 3.1 Instalacja Prisma
+## [✅] 3.1 Instalacja Prisma
 
 **Co instalujemy**
 
@@ -354,7 +354,7 @@ npm install prisma @prisma/client
 
 ---
 
-## [ ] 3.2 Inicjalizacja Prisma
+## [✅] 3.2 Inicjalizacja Prisma
 
 ```
 npx prisma init
@@ -368,38 +368,46 @@ prisma/schema.prisma
 
 ---
 
-## [ ] 3.3 Konfiguracja PostgreSQL
+## [✅] 3.3 Konfiguracja PostgreSQL
 
 ```
-DATABASE_URL
+DATABASE_URL=postgres://postgres:postgres@db:5432/app_db
 ```
 
-w `.env`
+w `.env` (ustawione i sprawdzone — połączenie działa, baza jest obecnie pusta)
 
 ---
 
-## [ ] 3.4 Implementacja modeli
+## [✅] 3.4 Implementacja modeli
 
-Dodaj modele:
+Dodano modele `User` i `Session` do `prisma/schema.prisma` i uruchomiono migrację inicjalną.
 
-- User
-- Session
+- `User`:
+  - `id` UUID, `email` (unique), `passwordHash`, `createdAt`, `updatedAt`
+- `Session`:
+  - `id` UUID, `userId` → relacja do `User`, `refreshToken` (unique), `revoked`, `createdAt`, `expiresAt`
 
-zgodnie z architekturą.
+Migracja utworzona w `prisma/migrations/*_init/migration.sql` i zastosowana do bazy.
 
 ---
 
-## [ ] 3.5 Migracja bazy danych
+## [✅] 3.5 Migracja bazy danych
 
 ```
 npx prisma migrate dev --name init
 ```
+
+Wykonano migrację inicjalną (utworzono katalog `prisma/migrations/*_init/migration.sql` i zastosowano ją do bazy). Wygenerowano także Prisma Client (`npx prisma generate`) do `backend/src/generated/prisma`.
 
 ---
 
 ## Weryfikacja
 
 ```
+# sprawdź migracje
+npx prisma migrate status --schema=prisma/schema.prisma
+
+# uruchom studio (opcjonalnie)
 npx prisma studio
 ```
 
