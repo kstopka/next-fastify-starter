@@ -1,125 +1,84 @@
-# 🔁 EXECUTION LOOP (UPDATED - AUTO PROGRESSION)
+# Project Context
 
-For EVERY step you MUST follow this exact process:
+## Overview
 
----
+Fullstack template built with Next.js App Router, Fastify, Prisma, PostgreSQL and Docker.
+All services are containerized with Docker Compose v2. Linux-first environment.
 
-## 1. UNDERSTAND STEP
+## Stack
 
-Explain briefly:
+| Layer    | Technology                                                                                   |
+| -------- | -------------------------------------------------------------------------------------------- |
+| Frontend | Next.js (App Router), TypeScript, Tailwind CSS v4, TanStack Query, React Hook Form + Zod     |
+| Backend  | Fastify, TypeScript, Prisma ORM, Zod, argon2, JWT                                            |
+| Database | PostgreSQL 16                                                                                |
+| Auth     | JWT access token (15min) + refresh token (7d, stored in DB), HttpOnly cookie, token rotation |
+| Infra    | Docker Compose v2, multi-stage Dockerfiles, healthchecks                                     |
 
-- what this step is about
-- what will be done
+## Repository Structure
 
----
+```
+backend/
+  src/
+    modules/auth/         auth.controller.ts · auth.service.ts · auth.repository.ts
+    server.ts             Fastify app entry point
+  prisma/
+    schema.prisma         User + Session models
+    migrations/
 
-## 2. IMPLEMENTATION
+frontend/
+  app/
+    api/auth/             BFF proxy routes (login · logout · refresh)
+    dashboard/            Protected route
+    login/                Login page
+    layout.tsx            Root layout (QueryProvider)
+  features/
+    auth/
+      login/              LoginForm.tsx
+      hooks/              useAuth.ts (useLogin mutation)
+  shared/
+    lib/api/              client.ts · auth.ts · index.ts
+    providers/            QueryProvider.tsx
+  middleware.ts           Route protection via `logged_in` cookie
 
-Provide:
+docker/
+  backend.Dockerfile      Multi-stage: builder → runner
+  frontend.Dockerfile     Multi-stage: deps → builder → runner (standalone)
+```
 
-- exact commands
-- exact code
-- exact file paths
+## Conventions
 
-NO placeholders.
+- **Module pattern** — every feature lives in `modules/<name>/` (backend) or `features/<name>/` (frontend)
+- **Controller / Service / Repository** — strict separation in backend modules
+- **BFF pattern** — frontend never calls Fastify directly from browser; all API calls go through `app/api/*` Next.js routes
+- **Validation** — Zod schemas on both frontend (forms) and backend (request body)
+- **Commits** — Conventional Commits (`feat`, `fix`, `refactor`, `docs`, `chore`)
+- **TypeScript strict mode** — both frontend and backend
 
----
+## Implemented Features (Phase 1 — complete)
 
-## 3. TEST / VERIFICATION
+- [x] Docker Compose dev + production setup
+- [x] PostgreSQL + Prisma migrations
+- [x] Fastify server with `/health` endpoint
+- [x] Auth module: login, refresh, logout
+- [x] argon2 password hashing
+- [x] JWT access token + refresh token rotation
+- [x] Next.js BFF API routes
+- [x] LoginForm with React Hook Form + Zod
+- [x] TanStack Query integration
+- [x] Route protection via middleware
+- [x] Multi-stage Dockerfiles
+- [x] setup.sh bootstrap script
 
-Provide:
+## Potential Next Steps (Phase 2+)
 
-- exact command to verify
-- expected output
-
----
-
-## 4. RESULT STATUS (CRITICAL LOGIC)
-
-You MUST decide the status:
-
-### Case 1 — Requires user action
-
-If the step:
-
-- requires running commands locally
-- depends on environment
-- cannot be verified by you
-
-→ mark as:
-[❓]
-
-AND STOP.
-
----
-
-### Case 2 — Can be completed logically
-
-If the step:
-
-- is configuration
-- is code generation
-- does NOT depend on execution result
-
-→ mark as:
-[✅]
-
-AND AUTOMATICALLY MOVE TO NEXT STEP.
-
----
-
-## 5. AUTO PROGRESSION RULE
-
-If step is marked `[✅]`:
-
-- DO NOT ask for confirmation
-- DO NOT stop
-- IMMEDIATELY proceed to the next step
-
-Repeat the execution loop.
-
----
-
-## 6. STOP CONDITION
-
-You MUST STOP ONLY when:
-
-- step is marked `[❓]`
-- OR user intervention is required
-
-Then say:
-
-"Waiting for your result or confirmation."
+- User profile endpoint + frontend page
+- Role-based access control (User / Admin roles already in schema)
+- Redis for session caching / rate limiting
+- Extended rate limiting with `@fastify/rate-limit`
+- Monitoring / structured logging with Pino
+- Audit log
+- WebSockets
+- Email verification
 
 ---
-
-# 🛑 HARD RULES (UPDATED)
-
-You are FORBIDDEN to:
-
-- skip steps
-- jump ahead
-- batch multiple steps without evaluation
-- assume `[✅]` if verification is required
-
-BUT:
-
-You MUST:
-
-- continue automatically if `[✅]`
-- behave like a deterministic executor
-
----
-
-# 🎯 EXECUTION MODE SUMMARY
-
-You behave like:
-
-STEP ENGINE:
-
-[ ] → execute → verify → decide
-
-IF `[✅]` → next step
-IF `[❓]` → STOP
-
-No exceptions.

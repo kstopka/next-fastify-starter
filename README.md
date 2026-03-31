@@ -1,235 +1,133 @@
-# Modern Fullstack Template
+# Next.js + Fastify Starter
 
-Modern fullstack application template built with **Next.js, Fastify, Prisma, PostgreSQL and Docker**.
-Designed for **Linux-first development**, experimentation, and learning modern backend/frontend architecture.
+Fullstack template — **Next.js App Router · Fastify · Prisma · PostgreSQL · Docker**.
 
-This repository serves as:
-
-- a **training project**
-- a **fullstack template**
-- a **sandbox for experimenting with modern technologies**
+> Linux-first. One command to start development.
 
 ---
 
-# Tech Stack
+## Tech Stack
 
-## Frontend
-
-- **Next.js (App Router)**
-- **TypeScript**
-- **Tailwind CSS**
-- **TanStack Query**
-- **Zustand**
-- **React Hook Form + Zod**
-
-## Backend
-
-- **Fastify**
-- **TypeScript**
-- **Prisma ORM**
-- **PostgreSQL**
-
-## Infrastructure
-
-- **Docker Compose v2**
-- **Linux-first development**
-- **Healthchecks**
-- **Multi-stage Docker builds**
-
-## Authentication
-
-- **JWT Access Token**
-- **Refresh Token rotation**
-- **HttpOnly Cookies**
-- **argon2 password hashing**
+| Layer    | Technology                                                     |
+| -------- | -------------------------------------------------------------- |
+| Frontend | Next.js (App Router), TypeScript, Tailwind CSS, TanStack Query |
+| Backend  | Fastify, TypeScript, Prisma ORM, Zod                           |
+| Database | PostgreSQL 16                                                  |
+| Auth     | JWT (access + refresh tokens), HttpOnly cookies, argon2        |
+| Infra    | Docker Compose v2, multi-stage builds, healthchecks            |
 
 ---
 
-# Project Goals
+## Quick Start
 
-This project is intended to:
+### Requirements
 
-- practice **modern fullstack architecture**
-- build a **reusable project template**
-- experiment with **new technologies**
-- develop **production-ready patterns**
-
-The architecture prioritizes:
-
-- maintainability
-- security
-- scalability
-- clear separation of concerns
-
----
-
-# Architecture
-
-Detailed architecture documentation is available here:
-
-```
-ARCHITEKTURA_APLIKACJI_V2.md
-```
-
-The application consists of three main services:
-
-- **Frontend** – Next.js application
-- **Backend** – Fastify API server
-- **Database** – PostgreSQL managed by Prisma
-
-All services are containerized using **Docker Compose**.
-
----
-
-# Repository Structure
-
-```
-.
-├── backend/                  Fastify API
-├── frontend/                 Next.js application
-├── docker/                   Dockerfiles (backend, frontend)
-├── .github/                  Copilot instructions
-├── docker-compose.yml            ← DEV (hot reload)
-├── docker-compose.production.yml ← PROD (built images)
-├── .env.example                  ← template konfiguracji
-├── setup.sh                      ← bootstrap środowiska
-└── ARCHITEKTURA_APLIKACJI_V2.md
-```
-
----
-
-# Getting Started
-
-## Requirements
-
-- Linux / WSL2
-- **Docker + Docker Compose v2** (the only requirement)
+- Docker + Docker Compose v2
 - Git
 
----
-
-## 🚀 Installation (new machine / server)
+### Development (hot reload)
 
 ```bash
 git clone https://github.com/kstopka/next-fastify-starter.git
 cd next-fastify-starter
-./setup.sh
+cp .env.example .env
+docker compose up -d
 ```
 
-`setup.sh` automatically:
+Backend uses `tsx watch`, frontend uses `next dev` — both hot-reload on every file save.
 
-1. Creates `.env` from `.env.example` (if missing)
-2. Builds production Docker images
-3. Starts PostgreSQL and waits for it to be healthy
-4. Runs Prisma migrations
-5. Stops containers — ready to use
-
----
-
-## 💻 Development (hot reload)
-
-```bash
-docker compose --file=docker-compose.yml up -d
-```
-
-| What        | How                                          |
-| ----------- | -------------------------------------------- |
-| Backend     | `tsx watch` — restarts on every `.ts` change |
-| Frontend    | `next dev` — HMR / Fast Refresh              |
-| Source code | mounted as volumes — no rebuilds             |
-| Migrations  | run automatically on startup                 |
-
-> First startup is slower (~30-60s) because `npm install` runs inside containers.
-> Next startups are fast — deps cached in named volumes.
+> First startup takes ~60s (npm install inside containers). Next starts are fast — deps cached in named volumes.
 
 **Stop:**
 
 ```bash
-docker compose --file=docker-compose.yml down
+docker compose down
 ```
 
 **Reset node_modules:**
 
 ```bash
-docker compose --file=docker-compose.yml down -v
+docker compose down -v
 ```
 
----
-
-## ⚙️ Production (built images)
+### Production (built images)
 
 ```bash
-docker compose --file=docker-compose.production.yml up -d
+./setup.sh
+docker compose -f docker-compose.production.yml up -d
 ```
 
-Pre-built images from multi-stage Dockerfiles. No source code mounted.
+`setup.sh` builds production images, waits for PostgreSQL, and runs Prisma migrations automatically.
 
 ---
 
 ## Services
 
-| Service  | URL                   |
-| -------- | --------------------- |
-| Frontend | http://localhost:3000 |
-| Backend  | http://localhost:4000 |
-| Database | localhost:5432        |
+| Service     | URL                   |
+| ----------- | --------------------- |
+| Frontend    | http://localhost:3000 |
+| Backend API | http://localhost:4000 |
+| Database    | localhost:5432        |
 
 ---
 
-# Authentication Flow
+## Project Structure
 
-1. User logs in via backend
-2. Backend validates credentials
-3. Backend issues:
-   - **Access token (short-lived)**
-   - **Refresh token (stored in database)**
-
-4. Refresh token stored in **HttpOnly cookie**
-5. Access token refreshed automatically when needed
-
----
-
-# Development Philosophy
-
-This project follows several core principles:
-
-- **Type safety first**
-- **Feature-based architecture**
-- **Small focused modules**
-- **Separation of concerns**
-- **Secure defaults**
-
----
-
-# Roadmap
-
-### Phase 1 – Core Template
-
-- Authentication
-- User management
-- Dockerized environment
-
-### Phase 2 – Production Improvements
-
-- Redis
-- Extended rate limiting
-- Monitoring
-- Logging improvements
-
-### Phase 3 – Experiments
-
-- WebSockets
-- Event-driven architecture
-- Queue system
-- Feature flags
+```
+.
+├── backend/                    Fastify API
+│   ├── src/
+│   │   ├── modules/auth/       Controller / Service / Repository
+│   │   └── server.ts
+│   └── prisma/                 Schema + migrations
+├── frontend/                   Next.js App Router
+│   ├── app/
+│   │   ├── api/auth/           BFF proxy routes
+│   │   ├── dashboard/          Protected page
+│   │   └── login/              Login page
+│   ├── features/auth/          Login form, hooks
+│   ├── shared/                 API client, providers
+│   └── middleware.ts           Route protection
+├── docker/
+│   ├── backend.Dockerfile
+│   └── frontend.Dockerfile
+├── docker-compose.yml              Development
+├── docker-compose.production.yml   Production
+├── setup.sh                    First-time setup script
+└── .env.example                Environment template
+```
 
 ---
 
-# Commit Convention
+## Environment Variables
 
-The project follows **Conventional Commits**.
+Copy `.env.example` to `.env` before starting.
 
-Examples:
+| Variable            | Description              | Default                  |
+| ------------------- | ------------------------ | ------------------------ |
+| `POSTGRES_USER`     | DB user                  | `postgres`               |
+| `POSTGRES_PASSWORD` | DB password              | `postgres`               |
+| `POSTGRES_DB`       | Database name            | `app_db`                 |
+| `DATABASE_URL`      | Prisma connection string | see `.env.example`       |
+| `JWT_SECRET`        | JWT signing secret       | **change in production** |
+
+---
+
+## Architecture
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed documentation:
+
+- Service diagrams
+- Authentication flow
+- Data models
+- API reference
+- Docker setup details
+
+---
+
+## Commit Convention
+
+Conventional Commits:
 
 ```
 feat(auth): implement login endpoint
@@ -240,6 +138,6 @@ docs: update architecture documentation
 
 ---
 
-# License
+## License
 
 MIT
