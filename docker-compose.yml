@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   db:
     image: postgres:16
@@ -13,28 +12,39 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./backend:/app
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.Dockerfile
+    restart: unless-stopped
     ports:
       - "4000:4000"
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/app_db
+      JWT_SECRET: change_me_in_production
+      NODE_ENV: production
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app-network
 
   frontend:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      BACKEND_URL: http://backend:4000
+      NODE_ENV: production
     depends_on:
       - backend
     networks:

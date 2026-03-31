@@ -537,35 +537,42 @@ feat(frontend): bootstrap nextjs application
 
 # ETAP 6 — INTEGRACJA FRONTEND ↔ BACKEND
 
-## [ ] 6.1 Implementacja API layer
+## [✅] 6.1 Implementacja API layer
 
 frontend:
 
 ```
-shared/lib/api
+shared/lib/api/client.ts   — uniwersalny fetch wrapper (GET/POST/PUT/DELETE)
+shared/lib/api/auth.ts     — loginApi, refreshApi, logoutApi
+shared/lib/api/index.ts    — barrel export
 ```
+
+BFF pattern: API routes w `app/api/auth/{login,refresh,logout}/route.ts` proxy do Fastify. Refresh token w HttpOnly cookie.
 
 ---
 
-## [ ] 6.2 Implementacja logowania
+## [✅] 6.2 Implementacja logowania
 
 formularz:
 
 ```
-features/auth/login
+features/auth/login/LoginForm.tsx
+features/auth/login/index.ts
 ```
 
----
-
-## [ ] 6.3 Integracja TanStack Query
-
-server state.
+Komponent `LoginForm` z walidacją, obsługą błędów, redirectem na `/dashboard`. Strona `/login` importuje z `@/features/auth/login`.
 
 ---
 
-## [ ] 6.4 Middleware auth
+## [✅] 6.3 Integracja TanStack Query
 
-ochrona tras.
+`@tanstack/react-query` zainstalowany. `QueryProvider` w `shared/providers/QueryProvider.tsx`, podpięty w `app/layout.tsx`. Hook `useLogin` w `features/auth/hooks/useAuth.ts` używany w `LoginForm`.
+
+---
+
+## [✅] 6.4 Middleware auth
+
+`middleware.ts` w root frontendu. Chroni `/dashboard` (redirect na `/login`). Zalogowani użytkownicy z `/login` → redirect na `/dashboard`. Oparte na cookie `logged_in`.
 
 ---
 
@@ -579,26 +586,25 @@ feat(integration): connect frontend with backend api
 
 # ETAP 7 — DOCKERIZACJA APLIKACJI
 
-## [ ] 7.1 Dockerfile backend
+## [✅] 7.1 Dockerfile backend
 
-node:20-alpine
-multi-stage
-
----
-
-## [ ] 7.2 Dockerfile frontend
-
-Next.js build
+`docker/backend.Dockerfile` — multi-stage (builder → runner). node:20-alpine, `npm ci`, `prisma generate`, `tsc`, healthcheck via `wget /health`.
 
 ---
 
-## [ ] 7.3 Integracja z docker-compose
+## [✅] 7.2 Dockerfile frontend
+
+`docker/frontend.Dockerfile` — 3-stage (deps → builder → runner). `output: "standalone"` w next.config.js. Non-root user `nextjs`. Port 3000.
+
+---
+
+## [✅] 7.3 Integracja z docker-compose
 
 serwisy:
 
-- db
-- backend
-- frontend
+- db (postgres:16, healthcheck `pg_isready`)
+- backend (build z `docker/backend.Dockerfile`, depends_on db healthy)
+- frontend (build z `docker/frontend.Dockerfile`, `BACKEND_URL=http://backend:4000`)
 
 ---
 
@@ -620,13 +626,16 @@ feat(docker): dockerize fullstack application
 
 # ETAP 8 — SKRYPT `setup.sh`
 
-## [ ] 8.1 Implementacja setup script
+## [✅] 8.1 Implementacja setup script
 
-Skrypt:
+Skrypt `setup.sh`:
 
-- build
-- migrate
-- start
+1. Pre-flight checks (docker, compose)
+2. `docker compose build`
+3. Start db + wait for `pg_isready`
+4. `prisma migrate deploy`
+5. `docker compose up -d`
+6. Print URLs (frontend :3000, backend :4000, db :5432)
 
 ---
 

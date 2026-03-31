@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import React from "react";
+import { QueryProvider } from "@/shared/providers";
 
 export const metadata = {
   title: "App",
@@ -13,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pl">
-      <body>{children}</body>
+      <body>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }
