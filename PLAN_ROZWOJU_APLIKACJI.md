@@ -481,7 +481,7 @@ feat(auth): implement authentication flow
 
 # ETAP 5 — FRONTEND BOOTSTRAP
 
-## [ ] 5.1 Inicjalizacja Next.js
+## [✅] 5.1 Inicjalizacja Next.js
 
 **Komenda**
 
@@ -495,23 +495,27 @@ Opcje:
 - App Router
 - Tailwind
 
+Zaktualizowano do Next.js 16, React 19, Tailwind CSS v4 z `@tailwindcss/postcss`. Build przechodzi pomyślnie.
+
 ---
 
-## [ ] 5.2 Struktura katalogów
+## [✅] 5.2 Struktura katalogów
 
 ```
-src/
 app/
 features/
 shared/
 types/
+styles/
 ```
+
+Utworzono katalogi `features/`, `shared/`, `types/` z `.gitkeep`. Katalog `app/` z App Router (layout, page, login, api).
 
 ---
 
-## [ ] 5.3 Konfiguracja Tailwind
+## [✅] 5.3 Konfiguracja Tailwind
 
-instalacja i weryfikacja stylów.
+Tailwind CSS v4.2.2 z `@tailwindcss/postcss`. CSS używa `@import "tailwindcss"` (składnia v4). Klasy utility działają poprawnie (`npm run build` przechodzi).
 
 ---
 

@@ -1,7 +1,11 @@
 import pkg from "@prisma/client";
 
 const PrismaPkg: any = pkg;
-const PrismaClient = PrismaPkg.PrismaClient ?? PrismaPkg.default?.PrismaClient ?? PrismaPkg.default ?? PrismaPkg;
+const PrismaClient =
+  PrismaPkg.PrismaClient ??
+  PrismaPkg.default?.PrismaClient ??
+  PrismaPkg.default ??
+  PrismaPkg;
 const prisma = new PrismaClient();
 
 export const findUserByEmail = async (email: string): Promise<any> => {
