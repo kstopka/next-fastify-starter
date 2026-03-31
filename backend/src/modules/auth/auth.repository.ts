@@ -1,12 +1,13 @@
-import pkg from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const PrismaPkg: any = pkg;
-const PrismaClient =
-  PrismaPkg.PrismaClient ??
-  PrismaPkg.default?.PrismaClient ??
-  PrismaPkg.default ??
-  PrismaPkg;
-const prisma = new PrismaClient();
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is required");
+}
+
+const adapter = new PrismaPg({ connectionString: DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 export const findUserByEmail = async (email: string): Promise<any> => {
   return prisma.user.findUnique({ where: { email } });

@@ -85,20 +85,14 @@ All services are containerized using **Docker Compose**.
 
 ```
 .
-├── backend
-│   └── Fastify API
-│
-├── frontend
-│   └── Next.js application
-│
-├── docker
-│   └── Docker related files
-│
-├── .github
-│   └── Copilot instructions and workflows
-│
-├── docker-compose.yml
-├── setup.sh
+├── backend/                  Fastify API
+├── frontend/                 Next.js application
+├── docker/                   Dockerfiles (backend, frontend)
+├── .github/                  Copilot instructions
+├── docker-compose.yml            ← DEV (hot reload)
+├── docker-compose.production.yml ← PROD (built images)
+├── .env.example                  ← template konfiguracji
+├── setup.sh                      ← bootstrap środowiska
 └── ARCHITEKTURA_APLIKACJI_V2.md
 ```
 
@@ -109,38 +103,70 @@ All services are containerized using **Docker Compose**.
 ## Requirements
 
 - Linux / WSL2
-- Docker
-- Docker Compose v2
+- **Docker + Docker Compose v2** (the only requirement)
 - Git
 
 ---
 
-## Setup
-
-The entire environment can be built using one script:
+## 🚀 Installation (new machine / server)
 
 ```bash
+git clone https://github.com/kstopka/next-fastify-starter.git
+cd next-fastify-starter
 ./setup.sh
 ```
 
-This script will:
+`setup.sh` automatically:
 
-- install dependencies
-- build Docker images
-- initialize the database
-- start the development environment
+1. Creates `.env` from `.env.example` (if missing)
+2. Builds production Docker images
+3. Starts PostgreSQL and waits for it to be healthy
+4. Runs Prisma migrations
+5. Stops containers — ready to use
 
 ---
 
-# Development
-
-Start the application using:
+## 💻 Development (hot reload)
 
 ```bash
-docker compose up
+docker compose --file=docker-compose.yml up -d
 ```
 
-Services will be available at:
+| What        | How                                          |
+| ----------- | -------------------------------------------- |
+| Backend     | `tsx watch` — restarts on every `.ts` change |
+| Frontend    | `next dev` — HMR / Fast Refresh              |
+| Source code | mounted as volumes — no rebuilds             |
+| Migrations  | run automatically on startup                 |
+
+> First startup is slower (~30-60s) because `npm install` runs inside containers.
+> Next startups are fast — deps cached in named volumes.
+
+**Stop:**
+
+```bash
+docker compose --file=docker-compose.yml down
+```
+
+**Reset node_modules:**
+
+```bash
+docker compose --file=docker-compose.yml down -v
+```
+
+---
+
+## ⚙️ Production (built images)
+
+```bash
+docker compose --file=docker-compose.production.yml up -d
+```
+
+Pre-built images from multi-stage Dockerfiles. No source code mounted.
+
+---
+
+## Services
 
 | Service  | URL                   |
 | -------- | --------------------- |

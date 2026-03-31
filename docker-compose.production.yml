@@ -1,11 +1,11 @@
-# docker-compose.yml — DEVELOPMENT (hot reloading)
+# docker-compose.production.yml — PRODUCTION
 #
-# Backend:  tsx watch  → restarts on every .ts file change
-# Frontend: next dev   → HMR / Fast Refresh
-# Source code mounted as volumes — no image rebuilds needed
+# Built from multi-stage Dockerfiles. No source code volumes.
+# Used by setup.sh for first-time setup and deployments.
 #
 # Usage:
-#   docker compose --file=docker-compose.yml up -d
+#   ./setup.sh
+#   docker compose --file=docker-compose.production.yml up -d
 
 services:
   db:
@@ -28,22 +28,16 @@ services:
       retries: 5
 
   backend:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./backend:/app
-      - backend_nm:/app/node_modules
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.Dockerfile
+    restart: unless-stopped
     ports:
       - "4000:4000"
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgres://postgres:postgres@db:5432/app_db}
-      JWT_SECRET: ${JWT_SECRET:-dev_secret_change_in_production}
-      NODE_ENV: development
-    command: >
-      sh -c "npm install &&
-             npx prisma generate &&
-             npx prisma migrate deploy &&
-             npm run dev"
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env for production}
+      NODE_ENV: production
     depends_on:
       db:
         condition: service_healthy
@@ -51,19 +45,15 @@ services:
       - app-network
 
   frontend:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-      - frontend_nm:/app/node_modules
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
       BACKEND_URL: http://backend:4000
-      NODE_ENV: development
-      WATCHPACK_POLLING: "true"
-      HOSTNAME: "0.0.0.0"
-    command: sh -c "npm install && npm run dev"
+      NODE_ENV: production
     depends_on:
       - backend
     networks:
@@ -72,8 +62,6 @@ services:
 volumes:
   postgres_data:
     name: postgres_data
-  backend_nm:
-  frontend_nm:
 
 networks:
   app-network:
