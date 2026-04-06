@@ -20,6 +20,9 @@ export default function LoginForm() {
           if (data.accessToken) {
             sessionStorage.setItem("accessToken", data.accessToken);
           }
+          if ((data as any).role) {
+            sessionStorage.setItem("role", (data as any).role);
+          }
           router.push("/dashboard");
         },
       },

@@ -13,6 +13,10 @@ export const findUserByEmail = async (email: string): Promise<any> => {
   return prisma.user.findUnique({ where: { email } });
 };
 
+export const findUserById = async (id: string): Promise<any> => {
+  return prisma.user.findUnique({ where: { id } });
+};
+
 export const createSession = async (data: {
   userId: string;
   refreshToken: string;

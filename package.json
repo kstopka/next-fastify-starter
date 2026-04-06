@@ -1,0 +1,9 @@
+{
+  "name": "next-fastify-starter",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "migrate": "./bin/migrate.sh",
+    "setup": "./bin/setup.sh"
+  }
+}

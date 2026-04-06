@@ -8,13 +8,17 @@ export interface LoginRequest {
   password: string;
 }
 
+export type Role = "USER" | "ADMIN";
+
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
+  role: Role;
 }
 
 export interface RefreshResponse {
   accessToken: string;
+  role: Role;
 }
 
 /** Login through the BFF proxy (Next.js API Route) */

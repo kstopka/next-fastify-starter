@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import {
   findUserByEmail,
+  findUserById,
   createSession,
   findSessionByToken,
   revokeSession,
@@ -42,7 +43,11 @@ export const login = async ({
   const ok = await verifyPassword(user.passwordHash, password);
   if (!ok) return null;
 
-  const accessToken = generateAccessToken({ sub: user.id, email: user.email });
+  const accessToken = generateAccessToken({
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+  });
   const refreshToken = crypto.randomUUID();
   const expiresAt = new Date(
     Date.now() + REFRESH_EXPIRES_DAYS * 24 * 60 * 60 * 1000,
@@ -50,7 +55,7 @@ export const login = async ({
 
   await createSession({ userId: user.id, refreshToken, expiresAt });
 
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, role: user.role };
 };
 
 export const refresh = async (token: string) => {
@@ -60,10 +65,12 @@ export const refresh = async (token: string) => {
   if (session.expiresAt && session.expiresAt.getTime() < Date.now())
     return null;
 
-  // load user id from session
-  const payload = { sub: session.userId };
+  // load user from session to include role in token
+  const user = await findUserById(session.userId);
+  if (!user) return null;
+  const payload = { sub: user.id, email: user.email, role: user.role };
   const accessToken = generateAccessToken(payload);
-  return { accessToken };
+  return { accessToken, role: user.role };
 };
 
 export const logout = async (token: string) => {

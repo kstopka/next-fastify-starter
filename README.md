@@ -50,14 +50,26 @@ docker compose down
 docker compose down -v
 ```
 
-### Production (built images)
+### Production vs Development setup
+
+The `setup.sh` script prepares the environment. By default it prepares the **development** environment. Pass `prod` to prepare production assets.
+
+Development (prepare DB, apply migrations and start dev services with HMR):
 
 ```bash
-./setup.sh
+./setup.sh        # default — prepares development environment and starts services
+# or
+./setup.sh dev
+```
+
+Production (build optimized images, apply migrations):
+
+```bash
+./setup.sh prod
 docker compose -f docker-compose.production.yml up -d
 ```
 
-`setup.sh` builds production images, waits for PostgreSQL, and runs Prisma migrations automatically.
+When run with `prod`, `setup.sh` builds production images, waits for PostgreSQL, and runs Prisma migrations automatically.
 
 ---
 
