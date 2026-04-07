@@ -30,7 +30,7 @@ if echo "${DATABASE_URL}" | grep -q "@db:"; then
   # ensure db service is up so the backend can connect
   docker compose up -d db
 
-  docker compose run --rm backend sh -c "npm install && npx prisma migrate deploy --schema=./prisma/schema.prisma && npx prisma generate --schema=./prisma/schema.prisma"
+  docker compose run --rm -T backend sh -c "npm install && npx prisma migrate deploy --schema=./prisma/schema.prisma && npx prisma generate --schema=./prisma/schema.prisma"
   echo "Done (inside container)."
   exit 0
 fi

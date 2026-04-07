@@ -57,20 +57,35 @@ if [ ! -f .env ]; then
     warn "Review .env and set JWT_SECRET before production use!"
 
     echo
-    info "Konfiguracja bazy danych: możesz nacisnąć Enter, aby zostawić domyślne wartości."
-    prompt_and_replace() {
-      key="$1"
-      default=$(grep -E "^$key=" .env | head -n1 | cut -d'=' -f2-)
-      read -rp "$key [$default]: " val
-      if [ -n "$val" ]; then
-        esc=$(printf '%s' "$val" | sed 's/[&/\\]/\\&/g')
-        sed -i "s/^$key=.*/$key=$esc/" .env
-      fi
-    }
-
-    prompt_and_replace POSTGRES_USER
-    prompt_and_replace POSTGRES_PASSWORD
-    prompt_and_replace POSTGRES_DB
+    info "Chcesz teraz uzupełnić wartości w .env? (y/n)"
+    read -r FILL_ANS
+    if [[ "$FILL_ANS" =~ ^[Yy] ]]; then
+      # Prompt for every key in .env (skip comments/blank lines)
+      while IFS= read -r line; do
+        # skip comments and empty lines
+        [[ "$line" =~ ^# ]] && continue
+        [[ -z "$line" ]] && continue
+        if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+          key=${BASH_REMATCH[1]}
+          cur=${BASH_REMATCH[2]}
+          # strip surrounding quotes from default display
+          disp=$(printf '%s' "$cur" | sed -e 's/^"//' -e 's/"$//')
+          if [[ "$key" =~ _?PASSWORD|SECRET|JWT|TOKEN|KEY ]]; then
+            read -rsp "$key [$disp]: " val
+            echo
+          else
+            read -rp "$key [$disp]: " val
+          fi
+          if [ -n "$val" ]; then
+            # escape slashes and ampersands for sed
+            esc=$(printf '%s' "$val" | sed 's/[&/\\]/\\&/g')
+            sed -i "s|^$key=.*|$key=$esc|" .env
+          fi
+        fi
+      done < .env
+    else
+      info "Pominięto uzupełnianie wartości .env — możesz edytować plik ręcznie."
+    fi
   else
     error ".env.example not found. Cannot create .env."
     exit 1

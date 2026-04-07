@@ -3,13 +3,13 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY backend/package.json ./
+RUN npm install
 
-COPY tsconfig.json ./
-COPY prisma.config.ts ./
-COPY src/ ./src/
-COPY prisma/ ./prisma/
+COPY backend/tsconfig.json ./
+COPY backend/prisma.config.ts ./prisma.config.ts
+COPY backend/src/ ./src/
+COPY backend/prisma/ ./prisma/
 
 RUN npx prisma generate
 RUN npm run build
@@ -21,8 +21,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+
+COPY backend/package.json ./
+RUN npm install --omit=dev
 
 # Copy Prisma schema + config for migrate deploy
 COPY --from=builder /app/prisma ./prisma
