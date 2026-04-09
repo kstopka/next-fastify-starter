@@ -196,7 +196,7 @@ model Session {
 
 ### Development (`docker-compose.yml`)
 
-- Uses the official `node:20-alpine` image directly — no build step required
+- Uses the official `node:22-alpine` image directly — no build step required
 - Source code is mounted as volumes; changes are reflected immediately
 - Backend: `tsx watch` — restarts on every `.ts` file change
 - Frontend: `next dev` — HMR / Fast Refresh
