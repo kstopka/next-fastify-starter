@@ -107,8 +107,8 @@ backend/
 
 ### Database — PostgreSQL 16 (port 5432)
 
-Managed exclusively via Prisma. Data is persisted in the `postgres_data` named Docker
-volume and survives container restarts.
+Managed exclusively via Prisma. Data is persisted in a project-scoped Docker
+volume created by Docker Compose (for example `<project>_postgres_data`) and survives container restarts.
 
 ---
 
@@ -211,12 +211,12 @@ model Session {
 
 ### Networks & Volumes
 
-| Resource        | Type             | Purpose                                  |
-| --------------- | ---------------- | ---------------------------------------- |
-| `app-network`   | Network (bridge) | Service-to-service communication by name |
-| `postgres_data` | Volume           | Persistent database data                 |
-| `backend_nm`    | Volume           | Cached node_modules — dev only           |
-| `frontend_nm`   | Volume           | Cached node_modules — dev only           |
+| Resource        | Type             | Purpose                                                              |
+| --------------- | ---------------- | -------------------------------------------------------------------- |
+| `app-network`   | Network (bridge) | Service-to-service communication by name                             |
+| `postgres_data` | Volume           | Project-scoped persistent DB volume (e.g. `<project>_postgres_data`) |
+| `backend_nm`    | Volume           | Cached node_modules — dev only                                       |
+| `frontend_nm`   | Volume           | Cached node_modules — dev only                                       |
 
 ---
 

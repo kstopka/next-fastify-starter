@@ -9,6 +9,7 @@
 
 services:
   db:
+    container_name: db
     image: postgres:16
     restart: unless-stopped
     environment:
@@ -28,6 +29,7 @@ services:
       retries: 5
 
   backend:
+    container_name: backend
     image: app-backend
     build:
       context: ./backend
@@ -46,6 +48,7 @@ services:
       - app-network
 
   frontend:
+    container_name: frontend
     image: app-frontend
     build:
       context: ./frontend
@@ -63,7 +66,6 @@ services:
 
 volumes:
   postgres_data:
-    name: postgres_data
 
 networks:
   app-network:
