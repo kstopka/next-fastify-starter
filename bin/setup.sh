@@ -94,6 +94,16 @@ else
   info ".env already exists — skipping copy."
 fi
 
+# ---- Step 0b: Sync backend/.env from .env ----
+DATABASE_URL_VAL=$(grep -E '^DATABASE_URL=' .env | head -1 | cut -d'=' -f2-)
+if [ -n "$DATABASE_URL_VAL" ]; then
+  mkdir -p backend
+  printf 'DATABASE_URL=%s\n' "$DATABASE_URL_VAL" > backend/.env
+  info "Synced DATABASE_URL to backend/.env"
+else
+  warn "DATABASE_URL not found in .env — backend/.env not created/updated."
+fi
+
 # ---- Step 1: Build images (only for prod) ----
 if [ "$MODE" = "prod" ]; then
   info "Building production Docker images..."
@@ -139,7 +149,7 @@ if [[ "$CREATE_USER_ANS" =~ ^[Yy] ]]; then
   info "Creating user in backend container..."
   # run one-off backend container to create user (ensure node deps available)
   # force DATABASE_URL to the compose service host so container connects to the DB service
-  $COMPOSE run --rm -e "NEW_USER_EMAIL=$NEW_USER_EMAIL" -e "NEW_USER_PASSWORD=$NEW_USER_PASSWORD" -e "NEW_USER_ROLE=$ROLE" -e "DATABASE_URL=postgres://postgres:postgres@db:5432/app_db" backend sh -c "npm install && node ./scripts/create_user.cjs"
+  $COMPOSE run --rm -e "NEW_USER_EMAIL=$NEW_USER_EMAIL" -e "NEW_USER_PASSWORD=$NEW_USER_PASSWORD" -e "NEW_USER_ROLE=$ROLE" -e "DATABASE_URL=${DATABASE_URL_VAL}" backend sh -c "npm install && node ./scripts/create_user.cjs"
   info "User creation finished."
 fi
 
