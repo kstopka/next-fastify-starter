@@ -2,8 +2,8 @@
 set -euo pipefail
 
 echo "Prisma migrate: applying pending migrations and generating client"
+MODE=${1:-migrate}
 
-# Load backend/.env if present to populate DATABASE_URL
 if [ -f "backend/.env" ]; then
   # shellcheck disable=SC1090
   set -a
@@ -18,27 +18,38 @@ fi
 
 cd backend
 
-if [ -z "${DATABASE_URL:-}" ]; then
-  echo "Error: DATABASE_URL is not set. Set it in the environment or in backend/.env"
+if [ -z "${HOST:-}" ]; then
+  echo "Error: HOST is not set. Set it in the environment or in backend/.env"
   exit 1
 fi
 
-# If DATABASE_URL points to the compose service host 'db', run migrations inside the
-# backend container so the hostname resolves on the compose network.
-if echo "${DATABASE_URL}" | grep -q "@db:"; then
-  echo "Detected DATABASE_URL pointing to 'db' — running migrations inside Docker Compose"
-  # ensure db service is up so the backend can connect
-  docker compose up -d db
+# CONTAINER_DB is the compose service name for the database (defaults to HOST for backwards compat)
+SVC_DB=${CONTAINER_DB:-${HOST}}
+SVC_BACKEND=${CONTAINER_BACKEND:-backend}
 
-  docker compose run --rm -T backend sh -c "npm install && npx prisma migrate deploy --schema=./prisma/schema.prisma && npx prisma generate --schema=./prisma/schema.prisma"
-  echo "Done (inside container)."
-  exit 0
+echo "Checking service '${SVC_DB}'..."
+CONTAINER_ID=$(docker compose ps -q "${SVC_DB}" || true)
+if [ -n "$CONTAINER_ID" ]; then
+  RUNNING=$(docker inspect -f '{{.State.Running}}' "$CONTAINER_ID" 2>/dev/null || echo "false")
+  if [ "$RUNNING" != "true" ]; then
+    echo "Service '${SVC_DB}' exists but is not running — starting..."
+    docker compose up -d "${SVC_DB}"
+  else
+    echo "Service '${SVC_DB}' is already running."
+  fi
+else
+  echo "Service '${SVC_DB}' is not created — starting..."
+  docker compose up -d "${SVC_DB}"
 fi
 
-echo "Applying migrations..."
-npx prisma migrate deploy --schema=./prisma/schema.prisma
+if [ "$MODE" = "setup" ]; then
+  docker compose up -d $SVC_BACKEND
+  docker compose exec -T $SVC_BACKEND sh -c "npm install && npx prisma migrate dev --schema=./prisma/schema.prisma && npx prisma generate --schema=./prisma/schema.prisma"
+  echo "Done (setup mode)."
+  else
+  echo "Running migrations inside a one-off backend container..."
+  docker compose run --rm -T $SVC_BACKEND sh -c "npx prisma migrate deploy --schema=./prisma/schema.prisma && npx prisma generate --schema=./prisma/schema.prisma"
+  echo "Done (inside container)."
+fi
 
-echo "Generating Prisma client..."
-npx prisma generate --schema=./prisma/schema.prisma
-
-echo "Done."
+echo "Migrate done."
