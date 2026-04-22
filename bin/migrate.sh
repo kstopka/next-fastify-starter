@@ -23,32 +23,29 @@ if [ -z "${HOST:-}" ]; then
   exit 1
 fi
 
-# CONTAINER_DB is the compose service name for the database (defaults to HOST for backwards compat)
-SVC_DB=${CONTAINER_DB:-${HOST}}
-SVC_BACKEND=${CONTAINER_BACKEND:-backend}
 
-echo "Checking service '${SVC_DB}'..."
-CONTAINER_ID=$(docker compose ps -q "${SVC_DB}" || true)
+echo "Checking service 'db'..."
+CONTAINER_ID=$(docker compose ps -q "db" || true)
 if [ -n "$CONTAINER_ID" ]; then
   RUNNING=$(docker inspect -f '{{.State.Running}}' "$CONTAINER_ID" 2>/dev/null || echo "false")
   if [ "$RUNNING" != "true" ]; then
-    echo "Service '${SVC_DB}' exists but is not running — starting..."
-    docker compose up -d "${SVC_DB}"
+    echo "Service 'db' exists but is not running — starting..."
+    docker compose up -d db
   else
-    echo "Service '${SVC_DB}' is already running."
+    echo "Service 'db' is already running."
   fi
 else
-  echo "Service '${SVC_DB}' is not created — starting..."
-  docker compose up -d "${SVC_DB}"
+  echo "Service 'db' is not created — starting..."
+  docker compose up -d db
 fi
 
 if [ "$MODE" = "setup" ]; then
-  docker compose up -d $SVC_BACKEND
-  docker compose exec -T $SVC_BACKEND sh -c "npm install && npx prisma migrate dev --schema=./prisma/schema.prisma && npx prisma generate --schema=./prisma/schema.prisma"
+  echo "Running migrations inside a one-off backend container (setup mode)..."
+  docker compose run --rm -T backend sh -c "npm install && npx prisma migrate dev --schema=./prisma/schema.prisma && npx prisma generate --schema=./prisma/schema.prisma"
   echo "Done (setup mode)."
-  else
+else
   echo "Running migrations inside a one-off backend container..."
-  docker compose run --rm -T $SVC_BACKEND sh -c "npx prisma migrate deploy --schema=./prisma/schema.prisma && npx prisma generate --schema=./prisma/schema.prisma"
+  docker compose run --rm -T backend sh -c "npx prisma migrate deploy --schema=./prisma/schema.prisma && npx prisma generate --schema=./prisma/schema.prisma"
   echo "Done (inside container)."
 fi
 

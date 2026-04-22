@@ -1,15 +1,18 @@
 # docker-compose.yml — DEVELOPMENT (hot reloading)
 #
-# Backend:  tsx watch  → restarts on every .ts file change
-# Frontend: next dev   → HMR / Fast Refresh
+# Backend:  tsx watch  → restarts on every .ts file change in ./backend
+# Frontend: next dev   → HMR / Fast Refresh in ./frontend
 # Source code mounted as volumes — no image rebuilds needed
 #
-# Usage:
+# First-time setup:
+#   ./bin/setup.sh          ← installs deps, runs migrations, then stops
+#
+# Start development:
 #   docker compose --file=docker-compose.yml up -d
 
 services:
   db:
-    container_name: ${CONTAINER_DB:-db}
+    container_name: db
     image: postgres:16
     restart: unless-stopped
     environment:
@@ -29,16 +32,22 @@ services:
       retries: 5
 
   backend:
-    container_name: ${CONTAINER_BACKEND:-backend}
-    build:
-      context: .
-      dockerfile: docker/backend.Dockerfile
+    container_name: backend
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - backend_nm:/app/node_modules
     ports:
       - "4000:4000"
     env_file: .env
     environment:
       JWT_SECRET: ${JWT_SECRET:-dev_secret_change_in_production}
-      NODE_ENV: ${NODE_ENV:-production}
+      NODE_ENV: ${NODE_ENV:-development}
+      # Override PORT from .env (which holds the DB port 5432) so Fastify binds to 4000
+      PORT: "4000"
+    # npm install is a no-op after setup (node_modules volume already populated)
+    command: sh -c "npm install && npx prisma generate --schema=./prisma/schema.prisma && npm run dev"
     depends_on:
       db:
         condition: service_healthy
@@ -46,7 +55,7 @@ services:
       - app-network
 
   frontend:
-    container_name: ${CONTAINER_FRONTEND:-frontend}
+    container_name: frontend
     image: node:22-alpine
     working_dir: /app
     volumes:
@@ -60,7 +69,9 @@ services:
       WATCHPACK_POLLING: "true"
       HOSTNAME: "0.0.0.0"
     env_file: .env
-    command: sh -c "npm install && npm run dev"
+    # npm install is a no-op after setup (node_modules volume already populated)
+    # --no-turbopack: Turbopack requires BMI2 CPU instructions not available on all hosts (e.g. WSL2)
+    command: sh -c "npm install && npm run dev -- --no-turbopack"
     depends_on:
       - backend
     networks:

@@ -9,7 +9,7 @@
 
 services:
   db:
-    container_name: ${CONTAINER_DB:-db}
+    container_name: db
     image: postgres:16
     restart: unless-stopped
     environment:
@@ -17,7 +17,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-app_db}
     ports:
-      - "5432:5432"
+      - "${PORT:-5432}:${PORT:-5432}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -29,7 +29,7 @@ services:
       retries: 5
 
   backend:
-    container_name: ${CONTAINER_BACKEND:-backend}
+    container_name: backend
     image: app-backend
     build:
       context: ./backend
@@ -48,7 +48,7 @@ services:
       - app-network
 
   frontend:
-    container_name: ${CONTAINER_FRONTEND:-frontend}
+    container_name: frontend
     image: app-frontend
     build:
       context: ./frontend
